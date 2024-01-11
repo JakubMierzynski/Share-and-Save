@@ -50,6 +50,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTH_USER_MODEL = "share_and_save_app.User"
+
 ROOT_URLCONF = 'ShareAndSave.urls'
 
 TEMPLATES = [
