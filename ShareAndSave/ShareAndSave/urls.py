@@ -20,8 +20,8 @@ from share_and_save_app.views import LandingPage, AddDonation, Login, Register, 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', LandingPage.as_view()),
-    path('przekaz-darowizne/', AddDonation.as_view()),
-    path('potwierdzenie-darowizny/', DonationConfirmation.as_view()),
+    path('przekaz-dary/', AddDonation.as_view()),
+    path('potwierdzenie-daru/', DonationConfirmation.as_view()),
     path('login/', Login.as_view()),
     path('rejestracja/', Register.as_view()),
 
