@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth import login, authenticate
 from django.db.models import Sum
 from django.shortcuts import render, redirect
@@ -5,7 +7,8 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib import messages
-from share_and_save_app.models import Donation, User
+from share_and_save_app.models import Donation, User, CustomUserManager
+from django.core.validators import validate_email
 
 
 class LandingPageView(View):
@@ -68,8 +71,45 @@ def LoginView(request):
             return redirect("login")
 
 
-
-
-class RegisterView(View):
-    def get(self, request):
+@csrf_exempt
+def RegisterView(request):
+    if request.method == "GET":
         return render(request, "share_and_save_app/register.html")
+
+    if request.method == "POST":
+        name = request.POST.get("name")
+        lastname = request.POST.get("surname")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        password2 = request.POST.get("password2")
+
+        # Validation
+        if len(name) < 1:
+            messages.add_message(request, messages.SUCCESS, f'Nie podano imienia. Ponownie wypełnij formularz')
+            return redirect("register")
+
+        if len(lastname) < 1:
+            messages.add_message(request, messages.SUCCESS, f'Nie podano nazwiska. Ponownie wypełnij formularz')
+            return redirect("register")
+
+        if password != password2:
+            messages.add_message(request, messages.SUCCESS, f'Hasła nie są identyczne. Ponownie wypełnij formularz')
+            return redirect("register")
+
+        try:
+            validate_email(email)
+        except ValidationError as e:
+            messages.add_message(request, messages.SUCCESS, f'Podany adres mailowy jest niepoprawny. Ponownie wypełnij formularz')
+            return redirect("register")
+
+
+        # Create User
+        user = User.objects.create_user(email=email,
+                                        password=password,
+                                        name=name,
+                                        lastname=lastname)
+        user.save()
+
+        # Redirect to login
+        messages.add_message(request, messages.SUCCESS, f'Pomyślnie utworzono konto. Zaloguj się')
+        return redirect("login")

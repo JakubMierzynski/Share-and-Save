@@ -27,6 +27,6 @@ urlpatterns = [
     path('przekaz-dary/', AddDonationView.as_view()),
     path('potwierdzenie-daru/', DonationConfirmationView.as_view()),
     path('login/', LoginView, name="login"),
-    path('rejestracja/', RegisterView.as_view(), name="register"),
+    path('rejestracja/', RegisterView, name="register"),
 
 ]
