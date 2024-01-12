@@ -1,14 +1,11 @@
 from django.contrib.auth import login, authenticate
 from django.db.models import Sum
-from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import FormView
-from share_and_save_app.forms import LoginForm
 from django.views.decorators.csrf import csrf_exempt
-
-from share_and_save_app.models import Donation
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.contrib import messages
+from share_and_save_app.models import Donation, User
 
 
 class LandingPageView(View):
@@ -50,14 +47,25 @@ def LoginView(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        user = authenticate(request, email=email, password=password)
 
-        if user is not None:
+        try:
+            user = User.objects.get(email=email)
+
+        except ObjectDoesNotExist:
+            messages.add_message(request, messages.SUCCESS, f'Nie istnieje konto powiązane z adresem {email}. Utwórz je tutaj')
+            return redirect("register")
+
+
+        auth = authenticate(request, email=email, password=password)
+
+        if auth is not None:
             login(request, user)
             # Redirect to a success page.
             return redirect("main")
-        else:
-            return HttpResponse("Brak użytkownika")
+
+        elif auth is None:
+            messages.add_message(request, messages.SUCCESS, 'Niepoprawne hasło')
+            return redirect("login")
 
 
 

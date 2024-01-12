@@ -27,6 +27,11 @@
 
     <section class="login-page">
       <h2>Załóż konto</h2>
+      {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
       <form>
         <div class="form-group">
           <input type="text" name="name" placeholder="Imię" />
