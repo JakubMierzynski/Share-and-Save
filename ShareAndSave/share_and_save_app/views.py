@@ -1,14 +1,17 @@
 import re
 
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.db.models import Sum
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib import messages
-from share_and_save_app.models import Donation, User, CustomUserManager
+from share_and_save_app.models import Donation, User
 from django.core.validators import validate_email
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class LandingPageView(View):
@@ -27,7 +30,10 @@ class LandingPageView(View):
         return render(request, "share_and_save_app/index.html", context=ctx)
 
 
-class AddDonationView(View):
+
+class AddDonationView(LoginRequiredMixin, View):
+    login_url = "login"
+
     def get(self, request):
         return render(request, "share_and_save_app/form.html")
 
@@ -63,8 +69,13 @@ def LoginView(request):
 
         if auth is not None:
             login(request, user)
-            # Redirect to a success page.
-            return redirect("main")
+            print(user.is_authenticated)
+
+            redirect_to = request.GET.get('next', None)
+            if redirect_to:
+                return HttpResponseRedirect(redirect_to)
+            else:
+                return HttpResponseRedirect(reverse_lazy("main"))
 
         elif auth is None:
             messages.add_message(request, messages.SUCCESS, 'Niepoprawne hasło')
@@ -106,10 +117,14 @@ def RegisterView(request):
         # Create User
         user = User.objects.create_user(email=email,
                                         password=password,
-                                        name=name,
-                                        lastname=lastname)
-        user.save()
+                                        first_name=name,
+                                        last_name=lastname)
 
         # Redirect to login
         messages.add_message(request, messages.SUCCESS, f'Pomyślnie utworzono konto. Zaloguj się')
         return redirect("login")
+
+
+def LogoutView(request):
+    logout(request)
+    return redirect('main')
