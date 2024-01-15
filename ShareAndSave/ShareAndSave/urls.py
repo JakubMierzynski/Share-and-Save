@@ -19,7 +19,8 @@ from share_and_save_app.views import LandingPageView,\
     AddDonationView,\
     LoginView,\
     RegisterView,\
-    DonationConfirmationView
+    DonationConfirmationView, \
+    LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,5 +29,6 @@ urlpatterns = [
     path('potwierdzenie-daru/', DonationConfirmationView.as_view()),
     path('login/', LoginView, name="login"),
     path('rejestracja/', RegisterView, name="register"),
+    path('wyloguj/', LogoutView, name="logout"),
 
 ]
