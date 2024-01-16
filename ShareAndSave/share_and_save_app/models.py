@@ -27,9 +27,8 @@ class CustomUserManager(UserManager):
         user = User(email=email,
                     first_name=first_name,
                     last_name=last_name,
-                    username=email,
-                    is_staff=is_staff,
-                    is_superuser=is_superuser)
+                    username=email)
+
         user.set_password(password)
 
         if commit:
@@ -40,20 +39,13 @@ class CustomUserManager(UserManager):
     def create_user(self, first_name: str, last_name: str, email: str, password: str, commit: bool = True):
         return self._create_user(first_name, last_name, email, password, commit=commit)
 
-    def create_superuser(self, first_name: str, last_name: str, email: str, password: str, commit: bool = True):
-        return self._create_user(first_name, last_name, email, password, is_staff=True, is_superuser=True, commit=commit)
-
 
 # Create your models here.
 class User(AbstractUser):
     email = models.EmailField(unique=True, blank=False, null=False)
-    first_name = models.CharField(max_length=150, blank=True)
-    last_name = models.CharField(max_length=150, blank=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     objects = CustomUserManager()
-
-
 
 
 

@@ -1,5 +1,6 @@
 import re
 
+from django.db import IntegrityError
 from django.contrib.auth import login, authenticate, logout
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
@@ -9,7 +10,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib import messages
-from share_and_save_app.models import Donation, User
+from share_and_save_app.models import Donation, User, Institution
 from django.core.validators import validate_email
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -35,7 +36,19 @@ class AddDonationView(LoginRequiredMixin, View):
     login_url = "login"
 
     def get(self, request):
-        return render(request, "share_and_save_app/form.html")
+        institutions = Institution.objects.all()
+
+        institution_name_list = []
+
+        for institution in institutions:
+            institution_name_list.append(institution.name)
+
+
+        ctx = {'institutions': institution_name_list,
+               }
+
+
+        return render(request, "share_and_save_app/form.html", context=ctx)
 
 
 class DonationConfirmationView(View):
@@ -114,11 +127,17 @@ def RegisterView(request):
             return redirect("register")
 
 
-        # Create User
-        user = User.objects.create_user(email=email,
-                                        password=password,
-                                        first_name=name,
-                                        last_name=lastname)
+        try:
+            # Create User
+            user = User.objects.create_user(email=email,
+                                            password=password,
+                                            first_name=name,
+                                            last_name=lastname)
+        except IntegrityError:
+            messages.add_message(request, messages.SUCCESS,
+                                 f'Podany adres mailowy jest już używany')
+            return redirect("register")
+
 
         # Redirect to login
         messages.add_message(request, messages.SUCCESS, f'Pomyślnie utworzono konto. Zaloguj się')
