@@ -1,33 +1,27 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.core.validators import validate_email
 from django.utils.timezone import now
 import datetime
 
 
 # Manager for User class
-class CustomUserManager(UserManager):
-    def _get_email(self,
-                   email: str):
-        validate_email(email)
-        return self.normalize_email(email)
+class UserManager(DjangoUserManager):
 
-    def _create_user(self,
-                     first_name: str,
-                     last_name: str,
-                     email: str,
-                     password: str,
-                     commit: bool,
-                     is_staff: bool = False,
-                     is_superuser: bool = False
-                     ):
-
-        email = self._get_email(email)
-
+    def _create_user(
+            self,
+            first_name,
+            last_name,
+            email,
+            password,
+            commit,
+            **extra_fields
+    ):
         user = User(email=email,
                     first_name=first_name,
                     last_name=last_name,
-                    username=email)
+                    **extra_fields
+                    )
 
         user.set_password(password)
 
@@ -36,17 +30,42 @@ class CustomUserManager(UserManager):
 
         return user
 
-    def create_user(self, first_name: str, last_name: str, email: str, password: str, commit: bool = True):
-        return self._create_user(first_name, last_name, email, password, commit=commit)
+    def create_user(
+            self,
+            email,
+            first_name,
+            last_name,
+            password,
+            commit=True,
+            is_staff=False,
+            is_superuser=False,
+            **extra_fields
+    ):
+        return self._create_user(first_name, last_name, email, password, commit=commit, is_staff=is_staff,
+                                 is_superuser=is_superuser, **extra_fields)
+
+    def create_superuser(
+            self,
+            email,
+            first_name,
+            last_name,
+            password,
+            commit=True,
+            is_staff=True,
+            is_superuser=True,
+            **extra_fields
+    ):
+        return self._create_user(first_name, last_name, email, password, commit=commit, is_staff=is_staff,
+                                 is_superuser=is_superuser, **extra_fields)
 
 
 # Create your models here.
 class User(AbstractUser):
-    email = models.EmailField(unique=True, blank=False, null=False)
+    username = None
+    email = models.EmailField(unique=True, blank=False)
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
-    objects = CustomUserManager()
-
+    REQUIRED_FIELDS = ["first_name", "last_name"]
+    objects = UserManager()
 
 
 INSTITUTION_TYPES = (
@@ -63,7 +82,8 @@ class Category(models.Model):
 class Institution(models.Model):
     name = models.CharField(max_length=150, blank=False, verbose_name="Nazwa instytucji")
     description = models.TextField(blank=False, verbose_name="Opis instytucji/organizacji/fundacji")
-    type = models.CharField(max_length=150, choices=INSTITUTION_TYPES, default="Fundacja", verbose_name="Typ organizacji")
+    type = models.CharField(max_length=150, choices=INSTITUTION_TYPES, default="Fundacja",
+                            verbose_name="Typ organizacji")
     categories = models.ManyToManyField(Category, verbose_name="Kategoria")
 
 
@@ -79,5 +99,3 @@ class Donation(models.Model):
     pick_up_time = models.TimeField(default=datetime.datetime.now().strftime("%H:%M:%S"), verbose_name="Godzina odbioru")
     pick_up_comment = models.TextField(verbose_name="Dodatkowe informacje")
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
-
-
