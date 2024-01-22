@@ -48,6 +48,13 @@ INSTITUTION_TYPES = (
 class Category(models.Model):
     name = models.CharField(max_length=150, blank=False, verbose_name="Kategoria")
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Kategoria"
+        verbose_name_plural = "Kategorie"
+
 
 class Institution(models.Model):
     name = models.CharField(max_length=150, blank=False, verbose_name="Nazwa instytucji")
@@ -58,6 +65,10 @@ class Institution(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "Instytucja"
+        verbose_name_plural = "Instytucje"
 
 
 class Donation(models.Model):
@@ -73,3 +84,7 @@ class Donation(models.Model):
                                     verbose_name="Godzina odbioru")
     pick_up_comment = models.TextField(verbose_name="Dodatkowe informacje")
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
+
+    class Meta:
+        verbose_name = "Dar"
+        verbose_name_plural = "Dary"
