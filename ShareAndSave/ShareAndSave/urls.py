@@ -27,7 +27,7 @@ urlpatterns = [
     path('', LandingPageView.as_view(), name="main"),
     path('przekaz-dary/', AddDonationView.as_view(), name="make_donation"),
     path('potwierdzenie-daru/', DonationConfirmationView.as_view()),
-    path('login/', LoginView, name="login"),
+    path('logowanie/', LoginView, name="login"),
     path('rejestracja/', RegisterView, name="register"),
     path('wyloguj/', LogoutView, name="logout"),
 
