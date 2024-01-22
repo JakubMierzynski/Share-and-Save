@@ -5,12 +5,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    {% block title %}
-    {% endblock %}
+    <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
-
 <body>
+  {% if request.path == "/" %}
+  <header class="header--main-page">
+  {% elif request.path == "/przekaz-dary/" or request.path == "/potwierdzenie-daru/" %}
+  <header class="header--form-page">
+  {% else %}
+  <header>
+  {% endif %}
+  <nav class="container container--70">
+    {% if user.is_anonymous %}
+      <ul class="nav--actions">
+        <li><a href='{% url "login" %}' class="btn btn--small btn--without-border">Zaloguj</a></li>
+        <li><a href='{% url "register" %}' class="btn btn--small btn--highlighted">Załóż konto</a></li>
+      </ul>
+    {% elif user %}
+      <ul class="nav--actions">
+        <li class="logged-user">
+          Witaj {{user.first_name}}
+      <ul class="dropdown">
+        <li><a href="#">Profil</a></li>
+        <li><a href="#">Ustawienia</a></li>
+        {% if request.user.is_superuser %}
+        <li><a href="{% url 'admin:index' %}">Panel administracyjny</a></li>
+        {% endif %}
+        <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+      </ul>
+      </li>
+    </ul>
+    {% endif %}
+
+    <ul>
+      <li><a href="{% url 'main' %}" class="btn btn--without-border active">Start</a></li>
+      <li><a href="{% url 'main' %}#steps" class="btn btn--without-border">O co chodzi?</a></li>
+      <li><a href="{% url 'main' %}#about-us" class="btn btn--without-border">O nas</a></li>
+      <li><a href="{% url 'main' %}#help" class="btn btn--without-border">Fundacje i organizacje</a></li>
+      <li><a href="{% url 'make_donation' %}" class="btn btn--without-border">Przekaż dary</a></li>
+      <li><a href="#contact" class="btn btn--without-border">Kontakt</a></li>
+    </ul>
+  </nav>
 
 {% block content %}
 {% endblock %}
@@ -43,6 +79,5 @@
           </div>
         </div>
       </footer>
-        <script src="/static/js/app.js"></script>
-  </body>
-</html>
+    </body>
+  </html>

@@ -1,5 +1,3 @@
-import re
-
 from django.db import IntegrityError
 from django.contrib.auth import login, authenticate, logout
 from django.db.models import Sum
@@ -10,13 +8,14 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib import messages
-from share_and_save_app.models import Donation, User, Institution
+from share_and_save_app.models import Donation, User, Institution, Category
 from django.core.validators import validate_email
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class LandingPageView(View):
     def get(self, request):
+        # DONATIONS
         donations = Donation.objects.all()
         donations_quantity = donations.aggregate(Sum('quantity')).get('quantity__sum')
 
@@ -24,8 +23,22 @@ class LandingPageView(View):
         for donation in donations:
             supported_institutions.add(donation.institution_id)
 
+        # FOUNDS
+        foundations = Institution.objects.filter(type="Fundacja")
+
+        # LOCAL FOUNDS
+        local_founds = Institution.objects.filter(type="Zbiórka lokalna")
+
+        # NON_GOV_ORGS
+        non_gov_orgs = Institution.objects.filter(type="Organizacja pozarządowa")
+
+
+
         ctx = {'donations_quantity': donations_quantity,
                'supported_institutions_counter': len(supported_institutions),
+               'foundations': foundations,
+               'local_founds': local_founds,
+               'non_gov_orgs': non_gov_orgs,
                }
 
         return render(request, "share_and_save_app/index.html", context=ctx)
@@ -36,20 +49,42 @@ class AddDonationView(LoginRequiredMixin, View):
     login_url = "login"
 
     def get(self, request):
+        categories = Category.objects.all()
         institutions = Institution.objects.all()
 
-        institution_name_list = []
-
-        for institution in institutions:
-            institution_name_list.append(institution.name)
-
-
-        ctx = {'institutions': institution_name_list,
+        ctx = {'institutions': institutions,
+               'categories': categories
                }
-
 
         return render(request, "share_and_save_app/form.html", context=ctx)
 
+    def post(self, request):
+        if request.method == "POST":
+            category = request.POST.get("categories")
+            bags = request.POST.get("bags")
+            organization = request.POST.get("organization")
+            address = request.POST.get("address")
+            city = request.POST.get("city")
+            postcode = request.POST.get("postcode")
+            phone = request.POST.get("phone")
+            data = request.POST.get("data")
+            time = request.POST.get("time")
+            more_info = request.POST.get("more_info")
+
+
+
+            print(category)
+            print(bags)
+            print(organization)
+            print(address)
+            print(city)
+            print(postcode)
+            print(phone)
+            print(data)
+            print(time)
+            print(more_info)
+
+            return redirect("main")
 
 class DonationConfirmationView(View):
     def get(self, request):
