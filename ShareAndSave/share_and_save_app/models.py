@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
-from django.core.validators import validate_email
 from django.utils.timezone import now
 import datetime
 
@@ -8,15 +7,7 @@ import datetime
 # Manager for User class
 class UserManager(DjangoUserManager):
 
-    def _create_user(
-            self,
-            first_name,
-            last_name,
-            email,
-            password,
-            commit,
-            **extra_fields
-    ):
+    def _create_user(self, first_name, last_name, email, password, **extra_fields):
         user = User(email=email,
                     first_name=first_name,
                     last_name=last_name,
@@ -24,38 +15,17 @@ class UserManager(DjangoUserManager):
                     )
 
         user.set_password(password)
-
-        if commit:
-            user.save()
+        user.save()
 
         return user
 
-    def create_user(
-            self,
-            email,
-            first_name,
-            last_name,
-            password,
-            commit=True,
-            is_staff=False,
-            is_superuser=False,
-            **extra_fields
-    ):
-        return self._create_user(first_name, last_name, email, password, commit=commit, is_staff=is_staff,
-                                 is_superuser=is_superuser, **extra_fields)
+    def create_user(self, email, first_name, last_name, password, is_staff=False, is_superuser=False, **extra_fields):
+        return self._create_user(first_name, last_name, email, password, is_staff=is_staff, is_superuser=is_superuser,
+                                 **extra_fields)
 
-    def create_superuser(
-            self,
-            email,
-            first_name,
-            last_name,
-            password,
-            commit=True,
-            is_staff=True,
-            is_superuser=True,
-            **extra_fields
-    ):
-        return self._create_user(first_name, last_name, email, password, commit=commit, is_staff=is_staff,
+    def create_superuser(self, email, first_name, last_name, password, is_staff=True, is_superuser=True,
+                         **extra_fields):
+        return self._create_user(first_name, last_name, email, password, is_staff=is_staff,
                                  is_superuser=is_superuser, **extra_fields)
 
 
@@ -96,6 +66,7 @@ class Donation(models.Model):
     city = models.CharField(max_length=50, verbose_name="Miasto")
     zip_code = models.CharField(max_length=5, verbose_name="Kod pocztowy")
     pick_up_date = models.DateField(default=now(), verbose_name="Data odbioru")
-    pick_up_time = models.TimeField(default=datetime.datetime.now().strftime("%H:%M:%S"), verbose_name="Godzina odbioru")
+    pick_up_time = models.TimeField(default=datetime.datetime.now().strftime("%H:%M:%S"),
+                                    verbose_name="Godzina odbioru")
     pick_up_comment = models.TextField(verbose_name="Dodatkowe informacje")
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
