@@ -56,6 +56,9 @@ class Institution(models.Model):
                             verbose_name="Typ organizacji")
     categories = models.ManyToManyField(Category, verbose_name="Kategoria")
 
+    def __str__(self):
+        return self.name
+
 
 class Donation(models.Model):
     quantity = models.IntegerField(verbose_name="Liczba worków")
