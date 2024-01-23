@@ -1,0 +1,10 @@
+{% extends "share_and_save_app/base.html" %}
+{% load static %}
+
+{% block title %}Twój profil{% endblock %}
+
+{% block content %}
+<p>Imię: {{ user.first_name }}</p>
+<p>Nazwisko: {{ user.last_name }}</p>
+<p>Email: {{ user.email }}</p>
+{% endblock %}

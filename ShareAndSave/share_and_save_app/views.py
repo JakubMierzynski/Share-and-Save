@@ -2,12 +2,14 @@ from django.db import IntegrityError
 from django.contrib.auth import login, authenticate, logout
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib import messages
+from django.views.generic import DetailView
+
 from share_and_save_app.models import Donation, User, Institution, Category
 from django.core.validators import validate_email
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -85,6 +87,7 @@ class AddDonationView(LoginRequiredMixin, View):
             print(more_info)
 
             return redirect("main")
+
 
 class DonationConfirmationView(View):
     def get(self, request):
@@ -182,3 +185,14 @@ def RegisterView(request):
 def LogoutView(request):
     logout(request)
     return redirect('main')
+
+
+
+class UserPageView(LoginRequiredMixin, DetailView):
+    login_url = "login"
+    model = User
+    template_name = "share_and_save_app/profile_detail.html"
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(User, pk=self.request.user.pk)
+

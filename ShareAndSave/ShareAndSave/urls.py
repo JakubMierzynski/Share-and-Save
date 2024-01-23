@@ -20,7 +20,9 @@ from share_and_save_app.views import LandingPageView,\
     LoginView,\
     RegisterView,\
     DonationConfirmationView, \
-    LogoutView
+    LogoutView, \
+    UserPageView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +32,6 @@ urlpatterns = [
     path('logowanie/', LoginView, name="login"),
     path('rejestracja/', RegisterView, name="register"),
     path('wyloguj/', LogoutView, name="logout"),
+    path('profil/', UserPageView.as_view(), name="profile")
 
 ]

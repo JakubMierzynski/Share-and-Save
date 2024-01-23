@@ -22,12 +22,12 @@
         <li><a href='{% url "login" %}' class="btn btn--small btn--without-border">Zaloguj</a></li>
         <li><a href='{% url "register" %}' class="btn btn--small btn--highlighted">Załóż konto</a></li>
       </ul>
-    {% elif user %}
+    {% elif user.is_authenticated %}
       <ul class="nav--actions">
         <li class="logged-user">
           Witaj {{user.first_name}}
       <ul class="dropdown">
-        <li><a href="#">Profil</a></li>
+        <li><a href="/profil/">Profil</a></li>
         <li><a href="#">Ustawienia</a></li>
         {% if request.user.is_superuser %}
         <li><a href="{% url 'admin:index' %}">Panel administracyjny</a></li>
