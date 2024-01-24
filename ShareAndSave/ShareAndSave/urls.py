@@ -14,15 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, reverse_lazy
 from share_and_save_app.views import LandingPageView,\
     AddDonationView,\
     LoginView,\
     RegisterView,\
     DonationConfirmationView, \
     LogoutView, \
-    UserPageView
+    UserPageView, \
+    PasswordChangeView
 
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,6 +34,7 @@ urlpatterns = [
     path('logowanie/', LoginView, name="login"),
     path('rejestracja/', RegisterView, name="register"),
     path('wyloguj/', LogoutView, name="logout"),
-    path('profil/', UserPageView.as_view(), name="profile")
+    path('profil/', UserPageView.as_view(), name="profile"),
+    path('zmiana-danych/', PasswordChangeView.as_view(template_name="share_and_save_app/change_password.html"), name="zmiana_danych"),
 
 ]

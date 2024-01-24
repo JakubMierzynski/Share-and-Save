@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.utils.timezone import now
+from django.contrib.auth.hashers import make_password
 import datetime
 
 
@@ -8,14 +9,15 @@ import datetime
 class UserManager(DjangoUserManager):
 
     def _create_user(self, first_name, last_name, email, password, **extra_fields):
-        user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    **extra_fields
-                    )
+        user = self.model(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            **extra_fields
+        )
 
-        user.set_password(password)
-        user.save()
+        user.password = make_password(password)
+        user.save(self.db)
 
         return user
 
@@ -23,8 +25,7 @@ class UserManager(DjangoUserManager):
         return self._create_user(first_name, last_name, email, password, is_staff=is_staff, is_superuser=is_superuser,
                                  **extra_fields)
 
-    def create_superuser(self, email, first_name, last_name, password, is_staff=True, is_superuser=True,
-                         **extra_fields):
+    def create_superuser(self, email, first_name, last_name, password, is_staff=True, is_superuser=True, **extra_fields):
         return self._create_user(first_name, last_name, email, password, is_staff=is_staff,
                                  is_superuser=is_superuser, **extra_fields)
 

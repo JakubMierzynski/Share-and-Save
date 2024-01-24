@@ -84,7 +84,6 @@
 
 
         <ul class="help--slides-items">
-          {% if foundations %}
           {% for foundation in foundations %}
           <li>
             <div class="col">
@@ -92,11 +91,11 @@
               <div class="subtitle">{{ foundation.description }}</div>
             </div>
 
-            <div class="col"><div class="text">{% for category in institution.categories.all %} {{ category }} {% endfor %}</div></div>
+            <div class="col"><div class="text">?</div></div>
           </li>
+          {% for category in institution.categories.category_id %} {{ category_name }} {% endfor %}
           {% endfor %}
         </ul>
-        {% endif %}
         <!-- Pagination
         <ul class="help--slides-pagination">
           <li><a href="#" class="btn btn--small btn--without-border active" data-page="1">1</a></li>
@@ -115,7 +114,6 @@
         </p>
 
         <ul class="help--slides-items">
-          {% if non_gov_orgs %}
           {% for org in non_gov_orgs %}
           <li>
             <div class="col">
@@ -127,7 +125,6 @@
           </li>
           {% endfor %}
         </ul>
-        {% endif %}
 
         <!-- Pagination
         <ul class="help--slides-pagination">
@@ -145,7 +142,6 @@
         <p>Lorem ipsum dolor sit amet, his ocurreret persequeris ea, ad utinam laudem duo. Verterem adipisci partiendo eos ne, ea his reque quaeque recteque, ne quo lobortis intellegam.</p>
 
         <ul class="help--slides-items">
-          {% if local_founds %}
           {% for found in local_founds %}
           <li>
             <div class="col">
@@ -156,7 +152,6 @@
             <div class="col"><div class="text">{% for found in local_founds.categories.all %} {{ category }} {% endfor %}</div></div>
             {% endfor %}
           </li>
-          {% endif %}
         </ul>
 
         <!-- Pagination

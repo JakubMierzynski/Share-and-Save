@@ -1,16 +1,18 @@
+from django.contrib.auth.views import PasswordChangeView as DjangoPasswordChangeView
 from django.db import IntegrityError
 from django.contrib.auth import login, authenticate, logout
 from django.db.models import Sum
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib import messages
-from django.views.generic import DetailView
-
+from django.views.generic import DetailView, UpdateView
+from django.views.decorators.csrf import ensure_csrf_cookie
 from share_and_save_app.models import Donation, User, Institution, Category
+from share_and_save_app.forms import PasswordChangeForm
 from django.core.validators import validate_email
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -73,30 +75,12 @@ class AddDonationView(LoginRequiredMixin, View):
             time = request.POST.get("time")
             more_info = request.POST.get("more_info")
 
-
-
-            print(category)
-            print(bags)
-            print(organization)
-            print(address)
-            print(city)
-            print(postcode)
-            print(phone)
-            print(data)
-            print(time)
-            print(more_info)
-
             return redirect("main")
 
 
 class DonationConfirmationView(View):
     def get(self, request):
         return render(request, "share_and_save_app/form-confirmation.html")
-
-
-# class LoginView(View):
-#     def get(self, request):
-#         return render(request, "share_and_save_app/login.html")
 
 
 @csrf_exempt
@@ -196,3 +180,9 @@ class UserPageView(LoginRequiredMixin, DetailView):
     def get_object(self, queryset=None):
         return get_object_or_404(User, pk=self.request.user.pk)
 
+
+
+class PasswordChangeView(LoginRequiredMixin, DjangoPasswordChangeView):
+    login_url = "login"
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy("profile")

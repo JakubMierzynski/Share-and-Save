@@ -28,7 +28,7 @@
           Witaj {{user.first_name}}
       <ul class="dropdown">
         <li><a href="/profil/">Profil</a></li>
-        <li><a href="#">Ustawienia</a></li>
+        <li><a href="/zmiana-danych/">Ustawienia</a></li>
         {% if request.user.is_superuser %}
         <li><a href="{% url 'admin:index' %}">Panel administracyjny</a></li>
         {% endif %}
